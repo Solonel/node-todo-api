@@ -1,4 +1,4 @@
-const MongoClient = require('mongodb').MongoClient;
+const {MongoClient , ObjectID} = require('mongodb');
 
 let user = 'solonel';
 let password = 'K4VMrR2YFqovfQU2';

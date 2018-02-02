@@ -1,24 +1,19 @@
 const MongoClient = require('mongodb').MongoClient;
 
-const url = 'mongodb://localhost:27017/TodoApp';
+let user = 'solonel';
+let password = 'K4VMrR2YFqovfQU2';
+let db = 'TodoApp';
 
-MongoClient.connect(url, (err, db) => {
+const uri = `mongodb+srv://${user}:${password}@solonel-ppryc.mongodb.net/${db}`;
+
+MongoClient.connect(uri, function (err, client) {
     if (err) {
-        return console.error('Unable to connect :', err);
+        return console.error('Unable to connect : ', err)
     }
-    console.log('Connect to MongoDB');
 
-    // db.collection('Todos').insertOne({ text: 'It s something', completed: false }, (err, result) => {
+    const TodoAppDb = client.db('TodoApp');
 
-    //     if (err) {
-    //         return console.error('Unable to insert :', err);
-    //     }
-
-    //     console.log(JSON.stringify(result.ops, undefined, 2));
-
-    // });
-
-    db.collection('Users').insertOne({ nqme: 'LE METOUR', age: 25, location: 'FRANCE' }, (err, result) => {
+    TodoAppDb.collection('Todos').insertOne({ text: 'It s something', completed: false }, (err, result) => {
 
         if (err) {
             return console.error('Unable to insert :', err);
@@ -28,5 +23,15 @@ MongoClient.connect(url, (err, db) => {
 
     });
 
-    db.close();
+    TodoAppDb.collection('Users').insertOne({ name: 'LE METOUR', age: 25, location: 'FRANCE' }, (err, result) => {
+
+        if (err) {
+            return console.error('Unable to insert :', err);
+        }
+
+        console.log(JSON.stringify(result.ops, undefined, 2));
+
+    });
+
+    client.close();
 });

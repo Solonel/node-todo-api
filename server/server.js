@@ -1,38 +1,41 @@
-const mongoose = require('mongoose');
+var express = require('express');
+var bodyParser = require('body-parser');
 
-let user = 'solonel';
-let password = 'K4VMrR2YFqovfQU2';
-let dbname = 'TodoApp';
+var { mongoose } = require('./db/mongoose');
+var { Todo } = require('./models/todo');
+var { User } = require('./models/user');
 
-const uri = `mongodb://${user}:${password}@solonel-shard-00-00-ppryc.mongodb.net:27017,solonel-shard-00-01-ppryc.mongodb.net:27017,solonel-shard-00-02-ppryc.mongodb.net:27017/${dbname}?ssl=true&replicaSet=solonel-shard-0&authSource=admin`
-//const uri = `mongodb+srv://${user}:${password}@solonel-ppryc.mongodb.net/${dbname}`;
+var app = express();
 
-mongoose.connect(uri);
+app.use(bodyParser.json());
 
-var db = mongoose.connection;
+app.post('/todos', (req, res) => {
+    var todo = new Todo({
+        text: req.body.text
+    });
 
-var todoSchema = mongoose.Schema({
-    text: {
-        type: String
-    },
-    completed: {
-        type: Boolean
-    },
-    completedAt: {
-        type: Number
-    }
+    todo.save().then((doc) => {
+        res.send(doc);
+    }, (e) => {
+        res.status(400).send(e);
+    });
 });
 
-mongoose.Promise = global.Promise;
-
-var Todo = mongoose.model('todos', todoSchema);
-
-var newTodo = new Todo({
-    text: 'Monter les meubles de la cuisine'
+app.get('/todos', (req, res) => {
+    Todo.find().then(
+        (todos) => {
+            res.send({
+                todos
+            });
+        },
+        (e) => {
+            res.status(400).send(e);
+        }
+    );
 });
 
-newTodo.save().then((doc) => {
-    console.log('Saved : ', doc);
-}, (err) => {
-    console.error('Error : ', err);
+app.listen(3000, () => {
+    console.log('Started on port 3000');
 });
+
+module.exports = { app };
